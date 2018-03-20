@@ -189,11 +189,11 @@ void Maze::MovePeople() {
   }
 
   for (auto& ta : tas_[student_->position().level]) {
-    if (appease_tas) ta->Appease();
     MazePosition ta_pos = ta->position();
     auto valid_moves = ValidMovementsAt(ta_pos);
     PlayerAction ta_move = ta->GetMove(valid_moves).Unwrap();
     MovePerson(ta, ta_move);
+    if (appease_tas) ta->Appease();
   }
 }
 
