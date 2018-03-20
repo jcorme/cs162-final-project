@@ -23,7 +23,7 @@ class TA : public MazePerson {
     void Unoccupy(OpenSpace* space) override { space->set_has_ta(false); }
 
     void Appease() { appeased_turns_ += 10; }
-    bool IsAppeased() { return appeased_turns_ > 1; }
+    bool IsAppeased() { return appeased_turns_ > 0; }
     void DecrementAppeasement() { if (appeased_turns_ > 0) --appeased_turns_; }
 
     unsigned appeased_turns() const { return appeased_turns_; }
