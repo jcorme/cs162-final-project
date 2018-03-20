@@ -1,0 +1,48 @@
+The first decision I made with this program was to assume as little about the
+maze as possible. My Maze and MazeLevel constructors, when parsing the maze data
+file, do check for a lot of edge cases, such as having multiple ladders on one
+level or having both a ladder and the instructor on a level, because letting
+those through could cause problems with other parts of the code that assume
+certain things about the maze (like there being only one ladder on any given
+level). The flipside to this decision is that adding new elements to the maze
+makes the code less and less maintainable. Given that that's not a problem here,
+I didn't put much effort into making the parsing code more abstract.
+
+Another decision I made was to handle most of the game logic within the Maze
+class. In terms of maintainability and separating concerns, this probably isn't
+the wisest thing to do, but the logic isn't too complicated so I just stuck it
+all in Maze methods.
+
+My test plan was simply to play the game many times, testing different edge
+cases each time; for example, in one game, I made sure that encountering an
+unappeased TA would send the student back to the beginning of the level; in
+another, I approached the instructor with less than three skills to ensure the
+student got sent back to the beginning of the first level. In essence, my
+approach was to make a list of all the possible things that could happen in the
+game and made sure they happened without the program melting down and blowing up
+my computer.
+
+My testing approach mostly worked out fine; there are only two bugs I can
+remember encountering (since they had me tearing my hair out). The first, and
+most annoying, one involved TAs trying to move into walls. This led to a
+BadOptionAccess exception each time because my Maze class assumes that the
+move returned by TA::GetMove is valid (that's an invariant of the GetMove
+method). Since it assumes the returned move is valid, it tries to get the
+OpenSpace object at the position the TA wants to move to by Unwrapping the
+optional value returned by Maze::SpaceAt. Since that position is not an open
+space, the optional threw a BadOptionAccess exception. I spent about two hours
+figuring out what was wrong until I realized my TA:GetMove was accessing a
+vector index one past the end because of my RNG. Welp.
+
+The second bug was a double free in the Maze constructor. Each time I pushed a
+new MazeLevel into the levels_ vector, the vector would copy the old MazeLevel
+objects. Since I didn't implement a copy constructor for MazeLevel, I ended up
+having double frees. I fixed this problem by just reserving space in the levels_
+vector because I apparently can't be bothered to write a copy constructor.
+
+The only real problems I encountered were the two bugs above. A good chunk of my
+time was spent finding and fixing them. A very helpful resource in solving those
+bugs was lldb; even with lldb, the first GetMove bug was evasive, but without
+it, I probably wouldn't have any hair left. Other than that, cppreference.com
+was also a valuable resource as always, because I can't remember the type
+signatures of anything to save my life.
